@@ -64,9 +64,12 @@ vec4 saturate(vec4 color, float factor) {
     float gray = dot(color, vec4(0.299, 0.587, 0.114, 0.)); // luminance
     return mix(vec4(gray), color, factor);
 }
-const vec4 TRAIL_COLOR = vec4(1.0, 0.725, 0.161, 1.0);
-const vec4 TRAIL_COLOR_ACCENT = vec4(1.0, 0., 0., 1.0);
-const float DURATION = 0.3; //IN SECONDS
+
+const vec4 TRAIL_COLOR = vec4(1.0, 0.412, 0.706, 1.0);
+const vec4 TRAIL_COLOR_ACCENT = vec4(1.0, 0.0, 0.502, 1.0);
+const float TRAIL_SATURATION = 1.0;
+const float TRAIL_BRIGHTNESS = 0.45;
+const float DURATION = 0.2; //IN SECONDS
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
@@ -104,11 +107,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float mod = .007;
     //trailblaze
     // HACK: Using the saturate function because I currently don't know how to blend colors without losing saturation.
-    vec4 trail = mix(saturate(TRAIL_COLOR_ACCENT, 1.5), fragColor, 1. - smoothstep(0., sdfTrail + mod, 0.007));
-    trail = mix(saturate(TRAIL_COLOR, 1.5), trail, 1. - smoothstep(0., sdfTrail + mod, 0.006));
-    trail = mix(trail, saturate(TRAIL_COLOR, 1.5), step(sdfTrail + mod, 0.));
+    vec4 trail = mix(saturate(TRAIL_COLOR_ACCENT * TRAIL_BRIGHTNESS, TRAIL_SATURATION), fragColor, 1. - smoothstep(0., sdfTrail + mod, 0.007));
+    trail = mix(saturate(TRAIL_COLOR * TRAIL_BRIGHTNESS, TRAIL_SATURATION), trail, 1. - smoothstep(0., sdfTrail + mod, 0.006));
+    trail = mix(trail, saturate(TRAIL_COLOR * TRAIL_BRIGHTNESS, TRAIL_SATURATION), step(sdfTrail + mod, 0.));
     //cursorblaze
-    trail = mix(saturate(TRAIL_COLOR_ACCENT, 1.5), trail, 1. - smoothstep(0., sdfCurrentCursor + .002, 0.004));
-    trail = mix(saturate(TRAIL_COLOR, 1.5), trail, 1. - smoothstep(0., sdfCurrentCursor + .002, 0.004));
+    trail = mix(saturate(TRAIL_COLOR_ACCENT * TRAIL_BRIGHTNESS, TRAIL_SATURATION), trail, 1. - smoothstep(0., sdfCurrentCursor + .002, 0.004));
+    trail = mix(saturate(TRAIL_COLOR * TRAIL_BRIGHTNESS, TRAIL_SATURATION), trail, 1. - smoothstep(0., sdfCurrentCursor + .002, 0.004));
     fragColor = mix(trail, fragColor, 1. - smoothstep(0., sdfCurrentCursor, easedProgress * lineLength));
 }

@@ -13,7 +13,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec2 shakeOffset = vec2(0.0);
 
     if (timeSinceShake >= 0.0 && timeSinceShake < shakeDuration) {
-        float intensity = 0.0008; // Adjust shake intensity here
+        float intensity = 0.0003; // Adjust shake intensity here
 
         float decay = 1.0 - (timeSinceShake / shakeDuration);
 
